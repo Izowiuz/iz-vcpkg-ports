@@ -1,0 +1,6 @@
+{
+  "name": "qt5-custom",
+  "version": "0.0.1",
+  "description": "A custom build of the Qt5 framework.",
+  "homepage": "https://www.qt.io"
+}
