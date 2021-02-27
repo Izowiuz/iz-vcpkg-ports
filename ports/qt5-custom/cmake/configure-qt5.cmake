@@ -1,18 +1,5 @@
 function(configure_qt5)
 
-	# lets setup our stuff ...
-	# _f_QT_CONFIGURE_ENTRYPOINT
-	#	what will be used for launching Qt's configure
-	
-	# _f_QT_CONFIGURE_OPTIONS
-	#	configure options passed to _f_QT_CONFIGURE_ENTRYPOINT
-	
-	# _f_BUILD_DIRECTORY
-	#	directory we will be building Qt in
-
-	# _f_BUILD_TYPES
-	# build types to be built
-
 	# parse external parameters
 	cmake_parse_arguments(_ext "" "SOURCE_PATH" "" ${ARGN})
 	
