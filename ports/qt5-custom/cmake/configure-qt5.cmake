@@ -154,9 +154,6 @@ function(configure_qt5)
 
 	# qt dependencies -->
 	
-	set(_f_DL_PTHREAD "-ldl -lpthread")
-	set(_f_DL_PTHREAD "-ldl -lpthread")
-	
 	# psql
 	find_library(PSQL_RELEASE NAMES pq libpq PATHS "${CURRENT_INSTALLED_DIR}/lib" NO_DEFAULT_PATH)
 	find_library(PSQL_DEBUG NAMES pq libpq pqd libpqd PATHS "${CURRENT_INSTALLED_DIR}/debug/lib" NO_DEFAULT_PATH)
