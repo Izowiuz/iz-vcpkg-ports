@@ -1,4 +1,7 @@
 function(download_qt5)
+
+	cmake_parse_arguments(_ext "" "OUT_SOURCE_PATH" "" ${ARGN})
+
     vcpkg_download_distfile(ARCHIVE_FILE
         URLS "https://download.qt.io/archive/qt/5.15/5.15.2/single/qt-everywhere-src-5.15.2.tar.xz"
         FILENAME "qt-everywhere-src-5.15.2.tar.xz"
@@ -10,4 +13,7 @@ function(download_qt5)
 		ARCHIVE "${ARCHIVE_FILE}"
 		REF "5.15.2"
 	)
+	
+	set(${_ext_OUT_SOURCE_PATH} ${SOURCE_PATH} PARENT_SCOPE)
+	
 endfunction()
