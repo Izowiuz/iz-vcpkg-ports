@@ -1,18 +1,5 @@
 function(configure_qt5)
 
-	# lets setup our stuff ...
-	# _f_QT_CONFIGURE_ENTRYPOINT
-	#	what will be used for launching Qt's configure
-	
-	# _f_QT_CONFIGURE_OPTIONS
-	#	configure options passed to _f_QT_CONFIGURE_ENTRYPOINT
-	
-	# _f_BUILD_DIRECTORY
-	#	directory we will be building Qt in
-
-	# _f_BUILD_TYPES
-	# build types to be built
-
 	# parse external parameters
 	cmake_parse_arguments(_ext "" "SOURCE_PATH" "" ${ARGN})
 	
@@ -195,6 +182,18 @@ function(configure_qt5)
 		set(_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE} "")
 		set(_f_BUILD_OPTIONS_${_t_BUILD_TYPE} "")
 
+		# setup qt paths
+		list(APPEND _f_BUILD_OPTIONS_${_t_BUILD_TYPE}
+			-archdatadir ${CURRENT_INSTALLED_DIR}/tools/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-datadir ${CURRENT_INSTALLED_DIR}/share/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-plugindir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/plugins
+			-qmldir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/qml
+			-headerdir ${CURRENT_INSTALLED_DIR}/include
+			-libexecdir ${CURRENT_INSTALLED_DIR}/tools/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-bindir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/bin
+			-libdir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/lib
+		)
+
 		if(VCPKG_TARGET_IS_WINDOWS)
 			list(APPEND _f_BUILD_OPTIONS_${_t_BUILD_TYPE}
 				-release
@@ -231,6 +230,18 @@ function(configure_qt5)
 		set(_f_BUILD_SHORT_NAME_${_t_BUILD_TYPE} "dbg")
 		set(_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE} "/debug")
 		set(_f_BUILD_OPTIONS_${_t_BUILD_TYPE} "")
+		
+		# setup qt paths
+		list(APPEND _f_BUILD_OPTIONS_${_t_BUILD_TYPE}
+			-archdatadir ${CURRENT_INSTALLED_DIR}/tools/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-datadir ${CURRENT_INSTALLED_DIR}/share/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-plugindir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/plugins
+			-qmldir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/qml
+			-headerdir ${CURRENT_INSTALLED_DIR}/include
+			-libexecdir ${CURRENT_INSTALLED_DIR}/tools/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-bindir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/bin
+			-libdir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/lib
+		)
 		
 		if(VCPKG_TARGET_IS_WINDOWS)
 			list(APPEND _f_BUILD_OPTIONS_${_t_BUILD_TYPE}
@@ -270,7 +281,7 @@ function(configure_qt5)
 		
 		message(STATUS "Configuring ${_t_CURRENT_TRIPLET}...")
 		file(MAKE_DIRECTORY ${_t_CURRENT_BUILD_DIRECTORY})
-		
+	
 		vcpkg_execute_required_process(
 			COMMAND "${_ext_SOURCE_PATH}/${_f_QT_CONFIGURE_ENTRYPOINT}" ${_f_QT_CONFIGURE_OPTIONS} ${_f_BUILD_OPTIONS_${_t_BUILD_TYPE}}
 			WORKING_DIRECTORY ${_t_CURRENT_BUILD_DIRECTORY}

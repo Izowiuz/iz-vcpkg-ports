@@ -12,15 +12,21 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 # include custom cmake files
 include(download-qt5)
 include(configure-qt5)
+include(build-qt5)
+include(install-qt5)
 
 # start by downloading qt5
 download_qt5(
 	OUT_SOURCE_PATH SOURCE_PATH
 )
 
-# configure it ...
+# configure it...
 configure_qt5(
 	SOURCE_PATH ${SOURCE_PATH}
 )
 
-# ... and install it
+# build it...
+build_qt5()
+
+# ...and finally install
+install_qt5()
