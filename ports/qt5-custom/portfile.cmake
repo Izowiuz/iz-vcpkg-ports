@@ -25,8 +25,8 @@ configure_qt5(
 	SOURCE_PATH ${SOURCE_PATH}
 )
 
-# # build it...
-# build_qt5()
+# build it...
+build_qt5()
 
-# # ...and finally install
-# install_qt5()
+# ...and finally install
+install_qt5()

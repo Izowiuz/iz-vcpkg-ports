@@ -15,15 +15,13 @@ function(build_qt5)
         set(_f_INVOKE "${MAKE}" -j${VCPKG_CONCURRENCY})
         set(_f_INVOKE_SINGLE "${MAKE}" -j1)
     endif()
-
+	
 	unset(_f_BUILD_TYPES)
 	if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE MATCHES "[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
 		set(_t_BUILD_TYPE "RELEASE")
 		
 		list(APPEND _f_BUILD_TYPES ${_t_BUILD_TYPE})
 		set(_f_BUILD_SHORT_NAME_${_t_BUILD_TYPE} "rel")
-		set(_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE} "")
-
 		unset(_t_BUILD_TYPE)
 	endif()
 	
