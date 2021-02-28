@@ -11,12 +11,13 @@ function(configure_qt5)
 	
 	set(_f_QT_CONFIGURE_OPTIONS "")
 	list(APPEND _f_QT_CONFIGURE_OPTIONS
-		-prefix ${CURRENT_INSTALLED_DIR}
+		-prefix ${CURRENT_PACKAGES_DIR}
 		-opensource
 		-confirm-license
-		-qt-zlib
-		-qt-pcre
 		-qt-doubleconversion
+		-system-zlib
+		-system-pcre
+		-system-sqlite
 		-no-gui
 		-no-dbus
 		-no-accessibility
@@ -30,6 +31,7 @@ function(configure_qt5)
 		-no-eglfs
 		-no-xkbcommon
 		-no-kms
+		-no-feature-zstd
 		-no-feature-xml
 		-no-feature-testlib
 		-no-feature-gif
@@ -80,7 +82,6 @@ function(configure_qt5)
 		-no-feature-undogroup
 		-no-feature-undoview
 		-no-feature-statemachine
-		-no-feature-zstd
 		-no-feature-cssparser
 		-no-feature-sqlmodel
 		-no-feature-textmarkdownreader
@@ -159,6 +160,10 @@ function(configure_qt5)
 	find_library(SQLITE_RELEASE NAMES sqlite3 PATHS "${CURRENT_INSTALLED_DIR}/lib" NO_DEFAULT_PATH)
 	find_library(SQLITE_DEBUG NAMES sqlite3 sqlite3d PATHS "${CURRENT_INSTALLED_DIR}/debug/lib" NO_DEFAULT_PATH)
 
+	# zlib
+	find_library(ZLIB_RELEASE NAMES z zlib PATHS "${CURRENT_INSTALLED_DIR}/lib" NO_DEFAULT_PATH)
+	find_library(ZLIB_DEBUG NAMES z zlib zd zlibd PATHS "${CURRENT_INSTALLED_DIR}/debug/lib" NO_DEFAULT_PATH)
+
 	# zstd
 	find_library(ZSTD_RELEASE NAMES zstd zstd_static PATHS "${CURRENT_INSTALLED_DIR}/lib" NO_DEFAULT_PATH)
 	find_library(ZSTD_DEBUG NAMES zstdd zstd_staticd PATHS "${CURRENT_INSTALLED_DIR}/debug/lib" NO_DEFAULT_PATH)
@@ -174,6 +179,7 @@ function(configure_qt5)
 	set(_f_WIN_LIBS "ws2_32.lib secur32.lib advapi32.lib shell32.lib crypt32.lib user32.lib gdi32.lib")
 	set(_f_LINUX_LIBS "ldl -lpthread")
 
+	unset(_f_BUILD_TYPES)
 	if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE MATCHES "[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
 		set(_t_BUILD_TYPE "RELEASE")
 		
@@ -184,14 +190,14 @@ function(configure_qt5)
 
 		# setup qt paths
 		list(APPEND _f_BUILD_OPTIONS_${_t_BUILD_TYPE}
-			-archdatadir ${CURRENT_INSTALLED_DIR}/tools/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
-			-datadir ${CURRENT_INSTALLED_DIR}/share/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
-			-plugindir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/plugins
-			-qmldir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/qml
-			-headerdir ${CURRENT_INSTALLED_DIR}/include
-			-libexecdir ${CURRENT_INSTALLED_DIR}/tools/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
-			-bindir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/bin
-			-libdir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/lib
+			-archdatadir ${CURRENT_PACKAGES_DIR}/tools/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-datadir ${CURRENT_PACKAGES_DIR}/share/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-plugindir ${CURRENT_PACKAGES_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/plugins
+			-qmldir ${CURRENT_PACKAGES_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/qml
+			-headerdir ${CURRENT_PACKAGES_DIR}/include
+			-libexecdir ${CURRENT_PACKAGES_DIR}/tools/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-bindir ${CURRENT_PACKAGES_DIR}/tools/${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-libdir ${CURRENT_PACKAGES_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/lib
 		)
 
 		if(VCPKG_TARGET_IS_WINDOWS)
@@ -233,14 +239,14 @@ function(configure_qt5)
 		
 		# setup qt paths
 		list(APPEND _f_BUILD_OPTIONS_${_t_BUILD_TYPE}
-			-archdatadir ${CURRENT_INSTALLED_DIR}/tools/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
-			-datadir ${CURRENT_INSTALLED_DIR}/share/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
-			-plugindir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/plugins
-			-qmldir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/qml
-			-headerdir ${CURRENT_INSTALLED_DIR}/include
-			-libexecdir ${CURRENT_INSTALLED_DIR}/tools/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
-			-bindir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/bin
-			-libdir ${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/lib
+			-bindir ${CURRENT_PACKAGES_DIR}/tools/${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-libdir ${CURRENT_PACKAGES_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/lib
+			-archdatadir ${CURRENT_PACKAGES_DIR}/tools/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-libexecdir ${CURRENT_PACKAGES_DIR}/tools/qt5${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-datadir ${CURRENT_PACKAGES_DIR}/share/qt5/${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}
+			-plugindir ${CURRENT_PACKAGES_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/plugins
+			-qmldir ${CURRENT_PACKAGES_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/qml
+			-headerdir ${CURRENT_PACKAGES_DIR}/include
 		)
 		
 		if(VCPKG_TARGET_IS_WINDOWS)

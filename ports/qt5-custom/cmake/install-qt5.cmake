@@ -9,6 +9,7 @@ function(install_qt5)
         set(_f_INVOKE "${MAKE}" -j${VCPKG_CONCURRENCY})
     endif()
 
+	unset(_f_BUILD_TYPES)
 	if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE MATCHES "[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
 		set(_t_BUILD_TYPE "RELEASE")
 		
@@ -39,9 +40,45 @@ function(install_qt5)
             WORKING_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${_t_CURRENT_TRIPLET}
             LOGNAME install-${_t_CURRENT_TRIPLET}
         )
+		
         message(STATUS "Installing ${_t_CURRENT_TRIPLET} done!")
 	
 		unset(_t_CURRENT_TRIPLET)
 	endforeach()
+
+	# nuke debug/lib/cmake
+	file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/lib/cmake")
+	
+	# copy lib/cmake to share/port_name/cmake
+	file(COPY "${CURRENT_PACKAGES_DIR}/lib/cmake/" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}/cmake/")
+	
+	# nuke lib/cmake
+	file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/lib/cmake")
+
+	# copy & nuke lib/Qt5Bootstrap.* files
+	file(GLOB _f_QT5_BOOTSRTAP_LIST "${CURRENT_PACKAGES_DIR}/lib/Qt5Bootstrap.*")
+	file(COPY ${_f_QT5_BOOTSRTAP_LIST} DESTINATION "${CURRENT_PACKAGES_DIR}/tools/qt5/lib/")
+	file(REMOVE ${_f_QT5_BOOTSRTAP_LIST})
+	
+	# copy & nuke debug/lib/Qt5Bootstrap.* files
+	file(GLOB _f_QT5_BOOTSRTAP_DEBUG_LIST "${CURRENT_PACKAGES_DIR}/debug/lib/Qt5Bootstrap.*")
+	file(COPY ${_f_QT5_BOOTSRTAP_DEBUG_LIST} DESTINATION "${CURRENT_PACKAGES_DIR}/tools/qt5/debug/lib/")
+	file(REMOVE ${_f_QT5_BOOTSRTAP_DEBUG_LIST})
+
+	# instal license file
+    if(EXISTS "${SOURCE_PATH}/LICENSE.LGPLv3")
+        set(_f_LICENSE_PATH "${SOURCE_PATH}/LICENSE.LGPLv3")
+    elseif(EXISTS "${SOURCE_PATH}/LICENSE.LGPL3")
+        set(_f_LICENSE_PATH "${SOURCE_PATH}/LICENSE.LGPL3")
+    elseif(EXISTS "${SOURCE_PATH}/LICENSE.GPLv3")
+        set(_f_LICENSE_PATH "${SOURCE_PATH}/LICENSE.GPLv3")
+    elseif(EXISTS "${SOURCE_PATH}/LICENSE.GPL3")
+        set(_f_LICENSE_PATH "${SOURCE_PATH}/LICENSE.GPL3")
+    elseif(EXISTS "${SOURCE_PATH}/LICENSE.GPL3-EXCEPT")
+        set(_f_LICENSE_PATH "${SOURCE_PATH}/LICENSE.GPL3-EXCEPT")
+    elseif(EXISTS "${SOURCE_PATH}/LICENSE.FDL")
+        set(_f_LICENSE_PATH "${SOURCE_PATH}/LICENSE.FDL")
+    endif()
+    file(INSTALL ${_f_LICENSE_PATH} DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
 
 endfunction()

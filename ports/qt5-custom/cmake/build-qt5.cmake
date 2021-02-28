@@ -1,5 +1,10 @@
 function(build_qt5)
 
+	# get python
+    vcpkg_find_acquire_program(PYTHON3)
+    get_filename_component(PYTHON3_EXE_PATH ${PYTHON3} DIRECTORY)
+    vcpkg_add_to_path(PREPEND "${PYTHON3_EXE_PATH}")
+
 	# setup make and nmake / jom
     if(CMAKE_HOST_WIN32)
 		vcpkg_find_acquire_program(JOM)
@@ -11,6 +16,7 @@ function(build_qt5)
         set(_f_INVOKE_SINGLE "${MAKE}" -j1)
     endif()
 
+	unset(_f_BUILD_TYPES)
 	if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE MATCHES "[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
 		set(_t_BUILD_TYPE "RELEASE")
 		
@@ -44,15 +50,6 @@ function(build_qt5)
         )
 		
 		message(STATUS "Building ${_t_CURRENT_TRIPLET} done!")
-	
-		message(STATUS "Installing ${_t_CURRENT_TRIPLET}...")
-	
-	    vcpkg_execute_required_process(
-            COMMAND ${_f_INVOKE} install
-            WORKING_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${_t_CURRENT_TRIPLET}
-            LOGNAME package-${_t_CURRENT_TRIPLET}
-        )
-        message(STATUS "Installing ${_t_CURRENT_TRIPLET} done!")
 	
 		unset(_t_CURRENT_TRIPLET)
 	endforeach()
