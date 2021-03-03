@@ -122,3 +122,5 @@ Stripped down configuration of Qt5 framework. Should be equal to Qt configured w
 	-skip qtxmlpatterns
 ```
 This port configures Qt from 'monolithic', all-in-one source archive. It is not recomended to use it alongside regular Qt5 ports as Bad Things Could Happen [tm].
+
+Triplets tested to be working are *x64-windows-static* and *x64-linux*.
