@@ -25,7 +25,6 @@ function(configure_qt5)
 		-no-dbus
 		-no-accessibility
 		-no-opengl
-		-no-pkg-config
 		-no-libjpeg
 		-no-libpng
 		-no-harfbuzz
@@ -179,7 +178,7 @@ function(configure_qt5)
 	# qt dependencies <--
 
 	set(_f_WIN_LIBS "ws2_32.lib secur32.lib advapi32.lib shell32.lib crypt32.lib user32.lib gdi32.lib")
-	set(_f_LINUX_LIBS "ldl -lpthread")
+	set(_f_LINUX_LIBS "-ldl -lpthread")
 
 	unset(_f_BUILD_TYPES)
 	if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE MATCHES "[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
@@ -188,6 +187,7 @@ function(configure_qt5)
 		list(APPEND _f_BUILD_TYPES ${_t_BUILD_TYPE})
 		set(_f_BUILD_SHORT_NAME_${_t_BUILD_TYPE} "rel")
 		set(_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE} "")
+		set(_f_CURRENT_INSTALLED_PKG_CONFIG_DIR_${_t_BUILD_TYPE} "${CURRENT_INSTALLED_DIR}/lib/pkgconfig")
 		set(_f_BUILD_OPTIONS_${_t_BUILD_TYPE} "")
 
 		# setup qt paths
@@ -235,6 +235,7 @@ function(configure_qt5)
 		list(APPEND _f_BUILD_TYPES ${_t_BUILD_TYPE})
 		set(_f_BUILD_SHORT_NAME_${_t_BUILD_TYPE} "dbg")
 		set(_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE} "/debug")
+		set(_f_CURRENT_INSTALLED_PKG_CONFIG_DIR_${_t_BUILD_TYPE} "${CURRENT_INSTALLED_DIR}/debug/lib/pkgconfig")
 		set(_f_BUILD_OPTIONS_${_t_BUILD_TYPE} "")
 		
 		# setup qt paths
@@ -276,9 +277,16 @@ function(configure_qt5)
 		unset(_t_BUILD_TYPE)
 	endif()
 
+    vcpkg_find_acquire_program(PKGCONFIG)
+    set(ENV{PKG_CONFIG} "${PKGCONFIG}")
+    get_filename_component(PKGCONFIG_PATH "${PKGCONFIG}" DIRECTORY)
+    vcpkg_add_to_path("${PKGCONFIG_PATH}")
+	
 	foreach(_t_BUILD_TYPE ${_f_BUILD_TYPES})
 		set(_t_CURRENT_TRIPLET ${TARGET_TRIPLET}-${_f_BUILD_SHORT_NAME_${_t_BUILD_TYPE}})
 		set(_t_CURRENT_BUILD_DIRECTORY "${CURRENT_BUILDTREES_DIR}/${_t_CURRENT_TRIPLET}")
+		
+		set(ENV{PKG_CONFIG_PATH} "${_f_CURRENT_INSTALLED_PKG_CONFIG_DIR_${_t_BUILD_TYPE}}")
 		
 		# cleanup old files
 		file(REMOVE_RECURSE "${_t_CURRENT_BUILD_DIRECTORY}")

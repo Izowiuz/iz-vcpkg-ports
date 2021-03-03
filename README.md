@@ -18,7 +18,6 @@ Stripped down configuration of Qt5 framework. Should be equal to Qt configured w
 	-no-dbus
 	-no-accessibility
 	-no-opengl
-	-no-pkg-config
 	-no-libjpeg
 	-no-libpng
 	-no-harfbuzz

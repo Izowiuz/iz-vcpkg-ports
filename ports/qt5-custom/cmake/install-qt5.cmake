@@ -55,15 +55,15 @@ function(install_qt5)
 	# nuke lib/cmake
 	file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/lib/cmake")
 
-	# copy & nuke lib/Qt5Bootstrap.* files
-	file(GLOB _f_QT5_BOOTSRTAP_LIST "${CURRENT_PACKAGES_DIR}/lib/Qt5Bootstrap.*")
-	file(COPY ${_f_QT5_BOOTSRTAP_LIST} DESTINATION "${CURRENT_PACKAGES_DIR}/tools/qt5/lib/")
-	file(REMOVE ${_f_QT5_BOOTSRTAP_LIST})
+	# copy & nuke lib/*Qt5Bootstrap.* files
+	file(GLOB _f_QT5_BOOTSTRAP_LIST "${CURRENT_PACKAGES_DIR}/lib/*Qt5Bootstrap.*")
+	file(COPY ${_f_QT5_BOOTSTRAP_LIST} DESTINATION "${CURRENT_PACKAGES_DIR}/tools/qt5/lib/")
+	file(REMOVE ${_f_QT5_BOOTSTRAP_LIST})
 	
-	# copy & nuke debug/lib/Qt5Bootstrap.* files
-	file(GLOB _f_QT5_BOOTSRTAP_DEBUG_LIST "${CURRENT_PACKAGES_DIR}/debug/lib/Qt5Bootstrap.*")
-	file(COPY ${_f_QT5_BOOTSRTAP_DEBUG_LIST} DESTINATION "${CURRENT_PACKAGES_DIR}/tools/qt5/debug/lib/")
-	file(REMOVE ${_f_QT5_BOOTSRTAP_DEBUG_LIST})
+	# copy & nuke debug/lib/*Qt5Bootstrap.* files
+	file(GLOB _f_QT5_BOOTSTRAP_DEBUG_LIST "${CURRENT_PACKAGES_DIR}/debug/lib/*Qt5Bootstrap.*")
+	file(COPY ${_f_QT5_BOOTSTRAP_DEBUG_LIST} DESTINATION "${CURRENT_PACKAGES_DIR}/tools/qt5/debug/lib/")
+	file(REMOVE ${_f_QT5_BOOTSTRAP_DEBUG_LIST})
 
 	# instal license file
     if(EXISTS "${SOURCE_PATH}/LICENSE.LGPLv3")
