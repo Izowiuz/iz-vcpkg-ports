@@ -8,6 +8,7 @@
     "zlib",
     "pcre2",
 	"sqlite3",
-	"openssl"
+	"openssl",
+	"double-conversion"
   ]
 }

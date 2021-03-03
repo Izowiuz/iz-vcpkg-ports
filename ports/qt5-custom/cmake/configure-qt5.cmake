@@ -14,10 +14,13 @@ function(configure_qt5)
 		-prefix ${CURRENT_PACKAGES_DIR}
 		-opensource
 		-confirm-license
-		-qt-doubleconversion
+		-system-doubleconversion
 		-system-zlib
 		-system-pcre
 		-system-sqlite
+		-sql-psql
+		-sql-sqlite
+		-no-sql-odbc
 		-no-gui
 		-no-dbus
 		-no-accessibility
@@ -29,6 +32,8 @@ function(configure_qt5)
 		-no-xcb
 		-no-xcb-xlib
 		-no-eglfs
+		-no-linuxfb
+		-no-fontconfig
 		-no-xkbcommon
 		-no-kms
 		-no-feature-zstd
@@ -125,14 +130,15 @@ function(configure_qt5)
 		-skip qtx11extras
 		-skip qtremoteobjects
 		-skip qtxmlpatterns
-		-sql-psql
-		-sql-sqlite
 		-verbose
 	)
 
 	# vcpkg would like to link statically
     if("${VCPKG_LIBRARY_LINKAGE}" STREQUAL "static")
-        list(APPEND _f_QT_CONFIGURE_OPTIONS -static)
+        list(APPEND _f_QT_CONFIGURE_OPTIONS
+			-static
+			-openssl-linked
+	)
     endif()
 
 	# target is windows and vcpkg would like to statically link CRT libraries

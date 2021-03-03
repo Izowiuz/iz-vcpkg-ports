@@ -10,8 +10,10 @@ function(download_qt5)
 
 	vcpkg_extract_source_archive_ex(
 		OUT_SOURCE_PATH SOURCE_PATH
-		ARCHIVE "${ARCHIVE_FILE}"
+		ARCHIVE ${ARCHIVE_FILE}
 		REF "5.15.2"
+		PATCHES
+			"patches/CMake.templates.patch"
 	)
 	
 	set(${_ext_OUT_SOURCE_PATH} ${SOURCE_PATH} PARENT_SCOPE)

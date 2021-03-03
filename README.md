@@ -7,10 +7,13 @@ Stripped down configuration of Qt5 framework. Should be equal to Qt configured w
 ```
 	-opensource
 	-confirm-license
-	-qt-doubleconversion
+	-system-doubleconversion
 	-system-zlib
 	-system-pcre
 	-system-sqlite
+	-sql-psql
+	-sql-sqlite
+	-no-sql-odbc
 	-no-gui
 	-no-dbus
 	-no-accessibility
@@ -118,8 +121,5 @@ Stripped down configuration of Qt5 framework. Should be equal to Qt configured w
 	-skip qtx11extras
 	-skip qtremoteobjects
 	-skip qtxmlpatterns
-	-sql-psql
-	-sql-sqlite
-	-verbose
 ```
 This port configures Qt from 'monolithic', all-in-one source archive. It is not recomended to use it alongside regular Qt5 ports as Bad Things Could Happen [tm].

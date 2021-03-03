@@ -49,8 +49,8 @@ function(install_qt5)
 	# nuke debug/lib/cmake
 	file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/lib/cmake")
 	
-	# copy lib/cmake to share/port_name/cmake
-	file(COPY "${CURRENT_PACKAGES_DIR}/lib/cmake/" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}/cmake/")
+	# copy lib/cmake to share/cmake
+	file(COPY "${CURRENT_PACKAGES_DIR}/lib/cmake/" DESTINATION "${CURRENT_PACKAGES_DIR}/share/cmake/")
 	
 	# nuke lib/cmake
 	file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/lib/cmake")

@@ -1,0 +1,318 @@
+diff --git a/qtbase/mkspecs/features/data/cmake/Qt5BasicConfig.cmake.in b/qtbase/mkspecs/features/data/cmake/Qt5BasicConfig.cmake.in
+index db18dbec..76097641 100644
+--- a/qtbase/mkspecs/features/data/cmake/Qt5BasicConfig.cmake.in
++++ b/qtbase/mkspecs/features/data/cmake/Qt5BasicConfig.cmake.in
+@@ -2,6 +2,16 @@ if (CMAKE_VERSION VERSION_LESS 3.1.0)
+     message(FATAL_ERROR \"Qt 5 $${CMAKE_MODULE_NAME} module requires at least CMake version 3.1.0\")
+ endif()
+ 
++# we have to help Qt a little bit with vcpkg package structure
++# lets hack around this a little bit 
++if("${CMAKE_BUILD_TYPE}" MATCHES \"[Dd][Ee][Bb][Uu][Gg]\")
++	set(_f_build_configuration \"DEBUG\")
++	set(_f_build_configuration_dir_prefix \"debug/\")
++else()
++	set(_f_build_configuration \"RELEASE\")
++	set(_f_build_configuration_dir_prefix \"\")
++endif()
++
+ !!IF !isEmpty(CMAKE_USR_MOVE_WORKAROUND)
+ !!IF !isEmpty(CMAKE_LIB_DIR_IS_ABSOLUTE)
+ set(_qt5$${CMAKE_MODULE_NAME}_install_prefix \"$$[QT_INSTALL_PREFIX]\")
+@@ -53,9 +63,9 @@ function(_qt5_$${CMAKE_MODULE_NAME}_process_prl_file prl_file_location Configura
+     set(_link_flags)
+ 
+ !!IF isEmpty(CMAKE_LIB_DIR_IS_ABSOLUTE)
+-    set(_qt5_install_libs \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_LIB_DIR}\")
++    set(_qt5_install_libs \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/${_f_build_configuration_dir_prefix}$${_build_configuration_dir_prefix}$${CMAKE_LIB_DIR}\")
+ !!ELSE
+-    set(_qt5_install_libs \"$${CMAKE_LIB_DIR}\")
++    set(_qt5_install_libs \"${_f_build_configuration_dir_prefix}$${CMAKE_LIB_DIR}\")
+ !!ENDIF
+ 
+     if(EXISTS \"${prl_file_location}\")
+@@ -146,9 +156,9 @@ macro(_populate_$${CMAKE_MODULE_NAME}_target_properties Configuration LIB_LOCATI
+     set_property(TARGET Qt5::$${CMAKE_MODULE_NAME} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${Configuration})
+ 
+ !!IF isEmpty(CMAKE_DLL_DIR_IS_ABSOLUTE)
+-    set(imported_location \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_DLL_DIR}${LIB_LOCATION}\")
++    set(imported_location \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/${_f_build_configuration_dir_prefix}$${CMAKE_DLL_DIR}${LIB_LOCATION}\")
+ !!ELSE
+-    set(imported_location \"$${CMAKE_DLL_DIR}${LIB_LOCATION}\")
++    set(imported_location \"${_f_build_configuration_dir_prefix}$${CMAKE_DLL_DIR}${LIB_LOCATION}\")
+ !!ENDIF
+     _qt5_$${CMAKE_MODULE_NAME}_check_file_exists(${imported_location})
+     set(_deps
+@@ -210,7 +220,7 @@ macro(_populate_$${CMAKE_MODULE_NAME}_target_properties Configuration LIB_LOCATI
+ 
+ !!IF !isEmpty(CMAKE_WINDOWS_BUILD)
+ !!IF isEmpty(CMAKE_LIB_DIR_IS_ABSOLUTE)
+-    set(imported_implib \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_LIB_DIR}${IMPLIB_LOCATION}\")
++    set(imported_implib \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${_build_configuration_dir_prefix}$${CMAKE_LIB_DIR}${IMPLIB_LOCATION}\")
+ !!ELSE
+     set(imported_implib \"IMPORTED_IMPLIB_${Configuration}\" \"$${CMAKE_LIB_DIR}${IMPLIB_LOCATION}\")
+ !!ENDIF
+@@ -229,13 +239,13 @@ if (NOT TARGET Qt5::$${CMAKE_MODULE_NAME})
+ !!IF !no_module_headers
+ !!IF !isEmpty(CMAKE_BUILD_IS_FRAMEWORK)
+     set(_Qt5$${CMAKE_MODULE_NAME}_OWN_INCLUDE_DIRS
+-      \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_LIB_DIR}$${CMAKE_QT_STEM}.framework\"
+-      \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_LIB_DIR}$${CMAKE_QT_STEM}.framework/Headers\"
++      \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${_build_configuration_dir_prefix}$${CMAKE_LIB_DIR}$${CMAKE_QT_STEM}.framework\"
++      \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${_build_configuration_dir_prefix}$${CMAKE_LIB_DIR}$${CMAKE_QT_STEM}.framework/Headers\"
+     )
+ !!IF isEmpty(CMAKE_NO_PRIVATE_INCLUDES)
+     set(Qt5$${CMAKE_MODULE_NAME}_PRIVATE_INCLUDE_DIRS
+-        \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_LIB_DIR}$${CMAKE_QT_STEM}.framework/Versions/$$section(VERSION, ., 0, 0)/Headers/$$VERSION/\"
+-        \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_LIB_DIR}$${CMAKE_QT_STEM}.framework/Versions/$$section(VERSION, ., 0, 0)/Headers/$$VERSION/$${MODULE_INCNAME}\"
++        \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${_build_configuration_dir_prefix}$${CMAKE_LIB_DIR}$${CMAKE_QT_STEM}.framework/Versions/$$section(VERSION, ., 0, 0)/Headers/$$VERSION/\"
++        \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${_build_configuration_dir_prefix}$${CMAKE_LIB_DIR}$${CMAKE_QT_STEM}.framework/Versions/$$section(VERSION, ., 0, 0)/Headers/$$VERSION/$${MODULE_INCNAME}\"
+     )
+ !!ELSE
+     set(Qt5$${CMAKE_MODULE_NAME}_PRIVATE_INCLUDE_DIRS \"\")
+@@ -372,37 +382,35 @@ if (NOT TARGET Qt5::$${CMAKE_MODULE_NAME})
+ 
+ !!IF !isEmpty(CMAKE_STATIC_TYPE)
+     if(NOT Qt5_EXCLUDE_STATIC_DEPENDENCIES)
+-!!IF !isEmpty(CMAKE_DEBUG_TYPE)
++		if(${_f_build_configuration} MATCHES \"DEBUG\")
+ !!IF isEmpty(CMAKE_LIB_DIR_IS_ABSOLUTE)
+-        _qt5_$${CMAKE_MODULE_NAME}_process_prl_file(
+-            \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_LIB_DIR}$${CMAKE_PRL_FILE_LOCATION_DEBUG}\" DEBUG
+-            _Qt5$${CMAKE_MODULE_NAME}_STATIC_DEBUG_LIB_DEPENDENCIES
+-            _Qt5$${CMAKE_MODULE_NAME}_STATIC_DEBUG_LINK_FLAGS
+-        )
++			_qt5_$${CMAKE_MODULE_NAME}_process_prl_file(
++				\"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/${_f_build_configuration_dir_prefix}$${CMAKE_LIB_DIR}$${CMAKE_PRL_FILE_LOCATION_DEBUG}\" DEBUG
++				_Qt5$${CMAKE_MODULE_NAME}_STATIC_DEBUG_LIB_DEPENDENCIES
++				_Qt5$${CMAKE_MODULE_NAME}_STATIC_DEBUG_LINK_FLAGS
++			)
+ !!ELSE
+-        _qt5_$${CMAKE_MODULE_NAME}_process_prl_file(
+-            \"$${CMAKE_LIB_DIR}$${CMAKE_PRL_FILE_LOCATION_DEBUG}\" DEBUG
+-            _Qt5$${CMAKE_MODULE_NAME}_STATIC_DEBUG_LIB_DEPENDENCIES
+-            _Qt5$${CMAKE_MODULE_NAME}_STATIC_DEBUG_LINK_FLAGS
+-        )
++			_qt5_$${CMAKE_MODULE_NAME}_process_prl_file(
++				\"${_f_build_configuration_dir_prefix}$${CMAKE_LIB_DIR}$${CMAKE_PRL_FILE_LOCATION_DEBUG}\" DEBUG
++				_Qt5$${CMAKE_MODULE_NAME}_STATIC_DEBUG_LIB_DEPENDENCIES
++				_Qt5$${CMAKE_MODULE_NAME}_STATIC_DEBUG_LINK_FLAGS
++			)
+ !!ENDIF
+-!!ENDIF
+-
+-!!IF !isEmpty(CMAKE_RELEASE_TYPE)
++		else()
+ !!IF isEmpty(CMAKE_LIB_DIR_IS_ABSOLUTE)
+-        _qt5_$${CMAKE_MODULE_NAME}_process_prl_file(
+-            \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_LIB_DIR}$${CMAKE_PRL_FILE_LOCATION_RELEASE}\" RELEASE
+-            _Qt5$${CMAKE_MODULE_NAME}_STATIC_RELEASE_LIB_DEPENDENCIES
+-            _Qt5$${CMAKE_MODULE_NAME}_STATIC_RELEASE_LINK_FLAGS
+-        )
++			_qt5_$${CMAKE_MODULE_NAME}_process_prl_file(
++				\"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/${_f_build_configuration_dir_prefix}$${CMAKE_LIB_DIR}$${CMAKE_PRL_FILE_LOCATION_RELEASE}\" RELEASE
++				_Qt5$${CMAKE_MODULE_NAME}_STATIC_RELEASE_LIB_DEPENDENCIES
++				_Qt5$${CMAKE_MODULE_NAME}_STATIC_RELEASE_LINK_FLAGS
++			)
+ !!ELSE
+-        _qt5_$${CMAKE_MODULE_NAME}_process_prl_file(
+-            \"$${CMAKE_LIB_DIR}$${CMAKE_PRL_FILE_LOCATION_RELEASE}\" RELEASE
+-            _Qt5$${CMAKE_MODULE_NAME}_STATIC_RELEASE_LIB_DEPENDENCIES
+-            _Qt5$${CMAKE_MODULE_NAME}_STATIC_RELEASE_LINK_FLAGS
+-        )
+-!!ENDIF
++			_qt5_$${CMAKE_MODULE_NAME}_process_prl_file(
++				\"${_f_build_configuration_dir_prefix}$${CMAKE_LIB_DIR}$${CMAKE_PRL_FILE_LOCATION_RELEASE}\" RELEASE
++				_Qt5$${CMAKE_MODULE_NAME}_STATIC_RELEASE_LIB_DEPENDENCIES
++				_Qt5$${CMAKE_MODULE_NAME}_STATIC_RELEASE_LINK_FLAGS
++			)
+ !!ENDIF
++		endif()
+     endif()
+ 
+ !!IF equals(TEMPLATE, aux)
+@@ -481,83 +489,30 @@ if (NOT TARGET Qt5::$${CMAKE_MODULE_NAME})
+     endif()
+ 
+ !!IF !equals(TEMPLATE, aux)
+-!!IF !isEmpty(CMAKE_RELEASE_TYPE)
++
++if(\"${_f_build_configuration}\" MATCHES \"RELEASE\")
++
+ !!IF !isEmpty(CMAKE_STATIC_WINDOWS_BUILD)
+     _populate_$${CMAKE_MODULE_NAME}_target_properties(RELEASE \"$${CMAKE_IMPLIB_FILE_LOCATION_RELEASE}\" \"\" $${CMAKE_DEBUG_AND_RELEASE})
+ !!ELSE
+     _populate_$${CMAKE_MODULE_NAME}_target_properties(RELEASE \"$${CMAKE_LIB_FILE_LOCATION_RELEASE}\" \"$${CMAKE_IMPLIB_FILE_LOCATION_RELEASE}\" $${CMAKE_DEBUG_AND_RELEASE})
+ !!ENDIF // CMAKE_STATIC_WINDOWS_BUILD
+ 
+-!!IF !isEmpty(CMAKE_FIND_OTHER_LIBRARY_BUILD)
+-!!IF isEmpty(CMAKE_DEBUG_TYPE)
+-!!IF !isEmpty(CMAKE_STATIC_WINDOWS_BUILD)
+-!!IF isEmpty(CMAKE_LIB_DIR_IS_ABSOLUTE)
+-    if (EXISTS \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_LIB_DIR}$${CMAKE_IMPLIB_FILE_LOCATION_DEBUG}\" )
+-!!ELSE // CMAKE_LIB_DIR_IS_ABSOLUTE
+-    if (EXISTS \"$${CMAKE_IMPLIB_FILE_LOCATION_DEBUG}\" )
+-!!ENDIF // CMAKE_LIB_DIR_IS_ABSOLUTE
+-        _populate_$${CMAKE_MODULE_NAME}_target_properties(DEBUG \"$${CMAKE_IMPLIB_FILE_LOCATION_DEBUG}\" \"\" $${CMAKE_DEBUG_AND_RELEASE})
+-!!ELSE // CMAKE_STATIC_WINDOWS_BUILD
+-    if (EXISTS
+-!!IF isEmpty(CMAKE_DLL_DIR_IS_ABSOLUTE)
+-        \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_DLL_DIR}$${CMAKE_LIB_FILE_LOCATION_DEBUG}\"
+-!!ELSE
+-        \"$${CMAKE_LIB_FILE_LOCATION_DEBUG}\"
+-!!ENDIF
+-      AND EXISTS
+-!!IF isEmpty(CMAKE_LIB_DIR_IS_ABSOLUTE)
+-        \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_LIB_DIR}$${CMAKE_IMPLIB_FILE_LOCATION_DEBUG}\" )
+-!!ELSE
+-        \"$${CMAKE_IMPLIB_FILE_LOCATION_DEBUG}\" )
+-!!ENDIF
+-        _populate_$${CMAKE_MODULE_NAME}_target_properties(DEBUG \"$${CMAKE_LIB_FILE_LOCATION_DEBUG}\" \"$${CMAKE_IMPLIB_FILE_LOCATION_DEBUG}\" $${CMAKE_DEBUG_AND_RELEASE})
+-!!ENDIF // CMAKE_STATIC_WINDOWS_BUILD
+-    endif()
+-!!ENDIF // CMAKE_DEBUG_TYPE
+-!!ENDIF // CMAKE_FIND_OTHER_LIBRARY_BUILD
+-
+-!!ENDIF // CMAKE_RELEASE_TYPE
++else()
+ 
+-!!IF !isEmpty(CMAKE_DEBUG_TYPE)
+ !!IF !isEmpty(CMAKE_STATIC_WINDOWS_BUILD)
+     _populate_$${CMAKE_MODULE_NAME}_target_properties(DEBUG \"$${CMAKE_IMPLIB_FILE_LOCATION_DEBUG}\" \"\" $${CMAKE_DEBUG_AND_RELEASE})
+ !!ELSE
+     _populate_$${CMAKE_MODULE_NAME}_target_properties(DEBUG \"$${CMAKE_LIB_FILE_LOCATION_DEBUG}\" \"$${CMAKE_IMPLIB_FILE_LOCATION_DEBUG}\" $${CMAKE_DEBUG_AND_RELEASE})
+ !!ENDIF // CMAKE_STATIC_WINDOWS_BUILD
+ 
+-!!IF !isEmpty(CMAKE_FIND_OTHER_LIBRARY_BUILD)
+-!!IF isEmpty(CMAKE_RELEASE_TYPE)
+-!!IF !isEmpty(CMAKE_STATIC_WINDOWS_BUILD)
+-!!IF isEmpty(CMAKE_LIB_DIR_IS_ABSOLUTE)
+-    if (EXISTS \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_LIB_DIR}$${CMAKE_IMPLIB_FILE_LOCATION_RELEASE}\" )
+-!!ELSE // CMAKE_LIB_DIR_IS_ABSOLUTE
+-    if (EXISTS \"$${CMAKE_IMPLIB_FILE_LOCATION_RELEASE}\" )
+-!!ENDIF // CMAKE_LIB_DIR_IS_ABSOLUTE
+-        _populate_$${CMAKE_MODULE_NAME}_target_properties(RELEASE \"$${CMAKE_IMPLIB_FILE_LOCATION_RELEASE}\" \"\" $${CMAKE_DEBUG_AND_RELEASE})
+-!!ELSE // CMAKE_STATIC_WINDOWS_BUILD
+-    if (EXISTS
+-!!IF isEmpty(CMAKE_DLL_DIR_IS_ABSOLUTE)
+-        \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_DLL_DIR}$${CMAKE_LIB_FILE_LOCATION_RELEASE}\"
+-!!ELSE
+-        \"$${CMAKE_LIB_FILE_LOCATION_RELEASE}\"
+-!!ENDIF
+-      AND EXISTS
+-!!IF isEmpty(CMAKE_LIB_DIR_IS_ABSOLUTE)
+-        \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_LIB_DIR}$${CMAKE_IMPLIB_FILE_LOCATION_RELEASE}\" )
+-!!ELSE
+-        \"$${CMAKE_IMPLIB_FILE_LOCATION_RELEASE}\" )
+-!!ENDIF
+-        _populate_$${CMAKE_MODULE_NAME}_target_properties(RELEASE \"$${CMAKE_LIB_FILE_LOCATION_RELEASE}\" \"$${CMAKE_IMPLIB_FILE_LOCATION_RELEASE}\" $${CMAKE_DEBUG_AND_RELEASE})
+-!!ENDIF // CMAKE_STATIC_WINDOWS_BUILD
+-    endif()
+-!!ENDIF // CMAKE_RELEASE_TYPE
+-!!ENDIF // CMAKE_FIND_OTHER_LIBRARY_BUILD
++endif()
+ 
+-!!ENDIF // CMAKE_DEBUG_TYPE
+ !!ELSE // TEMPLATE != aux
+     set_target_properties(Qt5::$${CMAKE_MODULE_NAME} PROPERTIES
+         INTERFACE_LINK_LIBRARIES \"${_Qt5$${CMAKE_MODULE_NAME}_LIB_DEPENDENCIES}\"
+     )
++	
+ !!ENDIF // TEMPLATE != aux
+ 
+ !!IF isEmpty(CMAKE_INTERNAL_MODULE)
+@@ -574,9 +529,9 @@ if (NOT TARGET Qt5::$${CMAKE_MODULE_NAME})
+         set_property(TARGET Qt5::${Plugin} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${Configuration})
+ 
+ !!IF isEmpty(CMAKE_PLUGIN_DIR_IS_ABSOLUTE)
+-        set(imported_location \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_PLUGIN_DIR}${PLUGIN_LOCATION}\")
++        set(imported_location \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/${_f_build_configuration_dir_prefix}$${CMAKE_PLUGIN_DIR}${PLUGIN_LOCATION}\")
+ !!ELSE
+-        set(imported_location \"$${CMAKE_PLUGIN_DIR}${PLUGIN_LOCATION}\")
++        set(imported_location \"${_f_build_configuration_dir_prefix}$${CMAKE_PLUGIN_DIR}${PLUGIN_LOCATION}\")
+ !!ENDIF
+         _qt5_$${CMAKE_MODULE_NAME}_check_file_exists(${imported_location})
+         set_target_properties(Qt5::${Plugin} PROPERTIES
+diff --git a/qtbase/mkspecs/features/data/cmake/Qt5PluginTarget.cmake.in b/qtbase/mkspecs/features/data/cmake/Qt5PluginTarget.cmake.in
+index b550a52c..58c498ea 100644
+--- a/qtbase/mkspecs/features/data/cmake/Qt5PluginTarget.cmake.in
++++ b/qtbase/mkspecs/features/data/cmake/Qt5PluginTarget.cmake.in
+@@ -1,6 +1,16 @@
+ 
+ add_library(Qt5::$$CMAKE_PLUGIN_NAME MODULE IMPORTED)
+ 
++# we have to help Qt a little bit with vcpkg package structure
++# lets hack around this a little bit 
++if("${CMAKE_BUILD_TYPE}" MATCHES \"[Dd][Ee][Bb][Uu][Gg]\")
++	set(_f_build_configuration \"DEBUG\")
++	set(_f_build_configuration_dir_prefix \"debug/\")
++else()
++	set(_f_build_configuration \"RELEASE\")
++	set(_f_build_configuration_dir_prefix \"\")
++endif()
++
+ !!IF !isEmpty(CMAKE_STATIC_TYPE)
+ set(_Qt5$${CMAKE_PLUGIN_NAME}_MODULE_DEPENDENCIES \"$${CMAKE_PLUGIN_MODULE_DEPS}\")
+ 
+@@ -15,49 +25,46 @@ foreach(_module_dep ${_Qt5$${CMAKE_PLUGIN_NAME}_MODULE_DEPENDENCIES})
+     endif()
+ endforeach()
+ 
+-!!IF !isEmpty(CMAKE_RELEASE_TYPE)
++if(\"${_f_build_configuration}\" MATCHES \"RELEASE\")
+ !!IF isEmpty(CMAKE_LIB_DIR_IS_ABSOLUTE)
+ _qt5_$${CMAKE_MODULE_NAME}_process_prl_file(
+-    \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_PLUGIN_DIR}$${CMAKE_PRL_FILE_LOCATION_RELEASE}\" RELEASE
++    \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/${_f_build_configuration_dir_prefix}$${CMAKE_PLUGIN_DIR}$${CMAKE_PRL_FILE_LOCATION_RELEASE}\" RELEASE
+     _Qt5$${CMAKE_PLUGIN_NAME}_STATIC_RELEASE_LIB_DEPENDENCIES
+     _Qt5$${CMAKE_PLUGIN_NAME}_STATIC_RELEASE_LINK_FLAGS
+ )
+ !!ELSE
+ _qt5_$${CMAKE_MODULE_NAME}_process_prl_file(
+-    \"$${CMAKE_PLUGIN_DIR}$${CMAKE_PRL_FILE_LOCATION_RELEASE}\" RELEASE
++    \"${_f_build_configuration_dir_prefix}$${CMAKE_PLUGIN_DIR}$${CMAKE_PRL_FILE_LOCATION_RELEASE}\" RELEASE
+     _Qt5$${CMAKE_PLUGIN_NAME}_STATIC_RELEASE_LIB_DEPENDENCIES
+     _Qt5$${CMAKE_PLUGIN_NAME}_STATIC_RELEASE_LINK_FLAGS
+ )
+ !!ENDIF
+-!!ENDIF
+-
+-!!IF !isEmpty(CMAKE_DEBUG_TYPE)
++else()
+ !!IF isEmpty(CMAKE_LIB_DIR_IS_ABSOLUTE)
+ _qt5_$${CMAKE_MODULE_NAME}_process_prl_file(
+-    \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/$${CMAKE_PLUGIN_DIR}$${CMAKE_PRL_FILE_LOCATION_DEBUG}\" DEBUG
++    \"${_qt5$${CMAKE_MODULE_NAME}_install_prefix}/${_f_build_configuration_dir_prefix}$${CMAKE_PLUGIN_DIR}$${CMAKE_PRL_FILE_LOCATION_DEBUG}\" DEBUG
+     _Qt5$${CMAKE_PLUGIN_NAME}_STATIC_DEBUG_LIB_DEPENDENCIES
+     _Qt5$${CMAKE_PLUGIN_NAME}_STATIC_DEBUG_LINK_FLAGS
+ )
+ !!ELSE
+ _qt5_$${CMAKE_MODULE_NAME}_process_prl_file(
+-    \"$${CMAKE_PLUGIN_DIR}$${CMAKE_PRL_FILE_LOCATION_DEBUG}\" DEBUG
++    \"${_f_build_configuration_dir_prefix}$${CMAKE_PLUGIN_DIR}$${CMAKE_PRL_FILE_LOCATION_DEBUG}\" DEBUG
+     _Qt5$${CMAKE_PLUGIN_NAME}_STATIC_DEBUG_LIB_DEPENDENCIES
+     _Qt5$${CMAKE_PLUGIN_NAME}_STATIC_DEBUG_LINK_FLAGS
+ )
+ !!ENDIF
+-!!ENDIF
++endif()
+ 
+ set_property(TARGET Qt5::$$CMAKE_PLUGIN_NAME PROPERTY INTERFACE_SOURCES
+     \"${CMAKE_CURRENT_LIST_DIR}/Qt5$${CMAKE_MODULE_NAME}_$${CMAKE_PLUGIN_NAME}_Import.cpp\"
+ )
+ !!ENDIF
+ 
+-!!IF !isEmpty(CMAKE_RELEASE_TYPE)
+-_populate_$${CMAKE_MODULE_NAME}_plugin_properties($$CMAKE_PLUGIN_NAME RELEASE \"$${CMAKE_PLUGIN_LOCATION_RELEASE}\" $${CMAKE_DEBUG_AND_RELEASE})
+-!!ENDIF
+-!!IF !isEmpty(CMAKE_DEBUG_TYPE)
+-_populate_$${CMAKE_MODULE_NAME}_plugin_properties($$CMAKE_PLUGIN_NAME DEBUG \"$${CMAKE_PLUGIN_LOCATION_DEBUG}\" $${CMAKE_DEBUG_AND_RELEASE})
+-!!ENDIF
++if(\"${_f_build_configuration}\" MATCHES \"RELEASE\")
++	_populate_$${CMAKE_MODULE_NAME}_plugin_properties($$CMAKE_PLUGIN_NAME RELEASE \"$${CMAKE_PLUGIN_LOCATION_RELEASE}\" $${CMAKE_DEBUG_AND_RELEASE})
++else()
++	_populate_$${CMAKE_MODULE_NAME}_plugin_properties($$CMAKE_PLUGIN_NAME DEBUG \"$${CMAKE_PLUGIN_LOCATION_DEBUG}\" $${CMAKE_DEBUG_AND_RELEASE})
++endif()
+ 
+ list(APPEND Qt5$${CMAKE_MODULE_NAME}_PLUGINS Qt5::$$CMAKE_PLUGIN_NAME)
+ set_property(TARGET Qt5::$${CMAKE_MODULE_NAME} APPEND PROPERTY QT_ALL_PLUGINS_$${CMAKE_PLUGIN_TYPE_ESCAPED} Qt5::$${CMAKE_PLUGIN_NAME})
