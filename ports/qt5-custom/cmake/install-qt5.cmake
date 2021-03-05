@@ -65,7 +65,7 @@ function(install_qt5)
 	file(COPY ${_f_QT5_BOOTSTRAP_DEBUG_LIST} DESTINATION "${CURRENT_PACKAGES_DIR}/tools/qt5/debug/lib/")
 	file(REMOVE ${_f_QT5_BOOTSTRAP_DEBUG_LIST})
 
-	# instal license file
+	# install license file
     if(EXISTS "${SOURCE_PATH}/LICENSE.LGPLv3")
         set(_f_LICENSE_PATH "${SOURCE_PATH}/LICENSE.LGPLv3")
     elseif(EXISTS "${SOURCE_PATH}/LICENSE.LGPL3")
@@ -80,5 +80,8 @@ function(install_qt5)
         set(_f_LICENSE_PATH "${SOURCE_PATH}/LICENSE.FDL")
     endif()
     file(INSTALL ${_f_LICENSE_PATH} DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
+    
+    # fixup pkgconfig dirs
+    vcpkg_fixup_pkgconfig()
 
 endfunction()

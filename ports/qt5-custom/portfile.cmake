@@ -2,8 +2,8 @@
 #	enable Zstandard support
 
 # test this with:
-#	.\vcpkg.exe remove qt5-custom  --overlay-ports=F:/git/iz-vcpkg-ports/ports/qt5-custom --triplet=x64-windows-static
-#	.\vcpkg install qt5-custom --overlay-ports=F:/git/iz-vcpkg-ports/ports/qt5-custom --triplet=x64-windows-static --editable
+# .\vcpkg.exe remove qt5-custom  --overlay-ports=F:/git/iz-vcpkg-ports/ports/qt5-custom --triplet=x64-windows-static
+# .\vcpkg install qt5-custom --overlay-ports=F:/git/iz-vcpkg-ports/ports/qt5-custom --triplet=x64-windows-static --editable
 
 # ./vcpkg install qt5-custom --overlay-ports=/home/izowiuz/Git/iz-vcpkg-ports/ports/qt5-custom --editable
 # ./vcpkg remove qt5-custom --overlay-ports=/home/izowiuz/Git/iz-vcpkg-ports/ports/qt5-custom
