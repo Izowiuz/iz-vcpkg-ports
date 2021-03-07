@@ -89,8 +89,8 @@ function(install_qt5)
     
    	foreach(_t_BUILD_TYPE ${_f_BUILD_TYPES})
     
-        file(TO_CMAKE_PATH "${PACKAGE_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/lib" _t_CMAKE_LIB_PATH)
-        file(TO_CMAKE_PATH "${PACKAGE_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/include" _t_CMAKE_INCLUDE_PATH)
+        file(TO_CMAKE_PATH "${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/lib" _t_CMAKE_LIB_PATH)
+        file(TO_CMAKE_PATH "${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/include" _t_CMAKE_INCLUDE_PATH)
         file(TO_CMAKE_PATH "${CURRENT_INSTALLED_DIR}" _t_CMAKE_INSTALLED_PREFIX)
     
         foreach(_t_PRL_FILE IN LISTS _f_QT5_PRL_FILES)
@@ -98,7 +98,7 @@ function(install_qt5)
             
             string(REPLACE "${_t_CMAKE_LIB_PATH}" "\$\$[QT_INSTALL_LIBS]" _t_FILE_DATA "${_t_FILE_DATA}")
             string(REPLACE "${_t_CMAKE_INCLUDE_PATH}" "\$\$[QT_INSTALL_HEADERS]" _t_FILE_DATA "${_t_FILE_DATA}")
-            string(REPLACE "${_t_CMAKE_INSTALLED_PREFIX}" "\$\$[QT_INSTALL_PREFIX]" _t_FILE_DATA "${_t_FILE_DATA}") 
+            string(REPLACE "${_t_CMAKE_INSTALLED_PREFIX}" "\$\$[QT_INSTALL_PREFIX]" _t_FILE_DATA "${_t_FILE_DATA}")
             
             file(WRITE "${_t_PRL_FILE}" "${_t_FILE_DATA}")
         endforeach()
