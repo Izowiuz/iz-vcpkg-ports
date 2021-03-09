@@ -15,7 +15,6 @@ function(install_qt5)
 		
 		list(APPEND _f_BUILD_TYPES ${_t_BUILD_TYPE})
 		set(_f_BUILD_SHORT_NAME_${_t_BUILD_TYPE} "rel")
-		set(_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE} "")
 
 		unset(_t_BUILD_TYPE)
 	endif()
@@ -25,7 +24,6 @@ function(install_qt5)
 		
 		list(APPEND _f_BUILD_TYPES ${_t_BUILD_TYPE})
 		set(_f_BUILD_SHORT_NAME_${_t_BUILD_TYPE} "dbg")
-		set(_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE} "/debug")
 		
 		unset(_t_BUILD_TYPE)
 	endif()
@@ -49,7 +47,7 @@ function(install_qt5)
 	# nuke debug/lib/cmake
 	file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/lib/cmake")
 	
-	# copy lib/cmake to share/cmake
+	# copy lib/cmake to share/cmakez
 	file(COPY "${CURRENT_PACKAGES_DIR}/lib/cmake/" DESTINATION "${CURRENT_PACKAGES_DIR}/share/cmake/")
 	
 	# nuke lib/cmake
@@ -85,24 +83,24 @@ function(install_qt5)
     vcpkg_fixup_pkgconfig()
     
     # fixup Qt's .prl files
-    file(GLOB_RECURSE _f_QT5_PRL_FILES "${CURRENT_PACKAGES_DIR}" "*.prl")
-    
-   	foreach(_t_BUILD_TYPE ${_f_BUILD_TYPES})
-    
-        file(TO_CMAKE_PATH "${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/lib" _t_CMAKE_LIB_PATH)
-        file(TO_CMAKE_PATH "${CURRENT_INSTALLED_DIR}${_f_BUILD_PATH_SUFFIX_${_t_BUILD_TYPE}}/include" _t_CMAKE_INCLUDE_PATH)
-        file(TO_CMAKE_PATH "${CURRENT_INSTALLED_DIR}" _t_CMAKE_INSTALLED_PREFIX)
-    
-        foreach(_t_PRL_FILE IN LISTS _f_QT5_PRL_FILES)
-            file(READ "${_t_PRL_FILE}" _t_FILE_DATA)
+    file(GLOB _f_QT5_RELEASE_PRL_FILES "${CURRENT_PACKAGES_DIR}/lib/*.prl")
+    file(GLOB _f_QT5_DEBUG_PRL_FILES "${CURRENT_PACKAGES_DIR}/debug/lib/*.prl")
+     
+    # here we should probably use QT_INSTALL_PREFIX but for some reason it is not working for debug builds
+   foreach(_t_PRL_FILE IN LISTS _f_QT5_RELEASE_PRL_FILES)
+        file(READ "${_t_PRL_FILE}" _t_FILE_DATA)
+        
+        string(REPLACE "${CURRENT_INSTALLED_DIR}/lib" "\$\$[QT_INSTALL_LIBS]" _t_FILE_DATA "${_t_FILE_DATA}")
             
-            string(REPLACE "${_t_CMAKE_LIB_PATH}" "\$\$[QT_INSTALL_LIBS]" _t_FILE_DATA "${_t_FILE_DATA}")
-            string(REPLACE "${_t_CMAKE_INCLUDE_PATH}" "\$\$[QT_INSTALL_HEADERS]" _t_FILE_DATA "${_t_FILE_DATA}")
-            string(REPLACE "${_t_CMAKE_INSTALLED_PREFIX}" "\$\$[QT_INSTALL_PREFIX]" _t_FILE_DATA "${_t_FILE_DATA}")
-            
-            file(WRITE "${_t_PRL_FILE}" "${_t_FILE_DATA}")
-        endforeach()
+        file(WRITE "${_t_PRL_FILE}" "${_t_FILE_DATA}")
+    endforeach()
     
-	endforeach()
+    foreach(_t_PRL_FILE IN LISTS _f_QT5_DEBUG_PRL_FILES)
+        file(READ "${_t_PRL_FILE}" _t_FILE_DATA)
+        
+        string(REPLACE "${CURRENT_INSTALLED_DIR}/debug/lib" "\$\$[QT_INSTALL_LIBS]" _t_FILE_DATA "${_t_FILE_DATA}")
+            
+        file(WRITE "${_t_PRL_FILE}" "${_t_FILE_DATA}")
+    endforeach()
 
 endfunction()
