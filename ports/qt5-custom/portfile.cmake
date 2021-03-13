@@ -5,8 +5,8 @@
 # .\vcpkg.exe remove qt5-custom  --overlay-ports=F:/git/iz-vcpkg-ports/ports/qt5-custom --triplet=x64-windows-static
 # .\vcpkg install qt5-custom --overlay-ports=F:/git/iz-vcpkg-ports/ports/qt5-custom --triplet=x64-windows-static --editable
 
-# ./vcpkg install qt5-custom --overlay-ports=/home/izowiuz/Git/iz-vcpkg-ports/ports/qt5-custom --editable
 # ./vcpkg remove qt5-custom --overlay-ports=/home/izowiuz/Git/iz-vcpkg-ports/ports/qt5-custom
+# ./vcpkg install qt5-custom --overlay-ports=/home/izowiuz/Git/iz-vcpkg-ports/ports/qt5-custom --editable
 
 # from https://github.com/microsoft/vcpkg/blob/master/scripts/cmake/vcpkg_buildpath_length_warning.cmake
 # `Warns the user if their vcpkg installation path might be too long for the package they're installing.`

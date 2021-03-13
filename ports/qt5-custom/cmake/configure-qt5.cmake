@@ -37,7 +37,6 @@ function(configure_qt5)
 		-no-kms
 		-no-feature-zstd
 		-no-feature-xml
-		-no-feature-testlib
 		-no-feature-gif
 		-no-feature-ico
 		-no-feature-texthtmlparser

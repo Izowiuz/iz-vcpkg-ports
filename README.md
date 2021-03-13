@@ -28,7 +28,6 @@ Stripped down configuration of Qt5 framework. Should be equal to Qt configured w
 	-no-kms
 	-no-feature-zstd
 	-no-feature-xml
-	-no-feature-testlib
 	-no-feature-gif
 	-no-feature-ico
 	-no-feature-texthtmlparser
