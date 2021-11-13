@@ -1,0 +1,17 @@
+{
+  "name": "qt6-custom",
+  "version": "0.0.1",
+  "description": "A custom, stripped-down build of the Qt6 framework.",
+  "homepage": "https://www.qt.io",
+  "dependencies": [
+    "vcpkg-cmake",
+    "vcpkg-cmake-config",
+    "libpq",
+    "zlib",
+    "pcre2",
+    "sqlite3",
+    "openssl",
+    "double-conversion",
+    "zstd"
+  ]
+} 
