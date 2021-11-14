@@ -8,8 +8,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 # include custom cmake files
 include(download-qt6)
-include(configure-qt6)
-include(build-qt6)
+include(configure-and-build-qt6)
 include(post-build-and-install-qt6)
 
 # start by downloading qt6
@@ -17,13 +16,10 @@ download_qt6(
     OUT_SOURCE_PATH SOURCE_PATH
 )
 
-# configure it...
-configure_qt6(
+# configure and build it...
+configure_and_build_qt6(
     SOURCE_PATH ${SOURCE_PATH}
 )
-
-# build it...
-build_qt6()
 
 # ... do some fixuping and install it
 post_build_and_install_qt6()
