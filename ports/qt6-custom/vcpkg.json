@@ -17,6 +17,10 @@
     "sqlite3",
     "openssl",
     "double-conversion",
-    "zstd"
+    "zstd",
+    {
+        "name": "pcre2",
+        "platform": "linux"
+    }
   ]
 } 
