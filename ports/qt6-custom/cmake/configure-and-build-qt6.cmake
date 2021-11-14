@@ -24,9 +24,8 @@ function(configure_and_build_qt6)
     endif()
    
     vcpkg_cmake_configure(
-        SOURCE_PATH
-            ${_ext_SOURCE_PATH}
-        PREFER_NINJA
+        SOURCE_PATH ${_ext_SOURCE_PATH}
+		DISABLE_PARALLEL_CONFIGURE
         OPTIONS
             ${_f_DYNAMIC_OPTIONS}
             -DFEATURE_relocatable=ON
@@ -69,7 +68,7 @@ function(configure_and_build_qt6)
             -DQT_USE_BUNDLED_BundledFreetype=FALSE
             -DQT_USE_BUNDLED_BundledHarfbuzz=FALSE
             -DQT_USE_BUNDLED_BundledLibpng=FALSE
-            -DQT_USE_BUNDLED_BundledPcre2=FALSE
+            -DQT_USE_BUNDLED_BundledPcre2=TRUE
             -DINPUT_gui=no
             -DINPUT_widgets=no
             -DINPUT_dbus=no
@@ -137,7 +136,6 @@ function(configure_and_build_qt6)
             -DINPUT_sql_sqlite=yes
             -DINPUT_system_zlib=yes
             -DINPUT_doubleconversion=system
-            -DINPUT_pcre=system
             -DINPUT_system_sqlite=yes
             -DINPUT_direct2d=no
             -DINPUT_directfb=no
@@ -151,7 +149,6 @@ function(configure_and_build_qt6)
             -DINPUT_freetype=no
             -DINPUT_harfbuzz=no
             -DINPUT_cups=no
-
             -DINSTALL_BINDIR=tools/qt6-custom
             -DINSTALL_LIBEXECDIR=tools/qt6-custom
             -DINSTALL_PLUGINSDIR=Qt6/plugins
@@ -159,71 +156,11 @@ function(configure_and_build_qt6)
             -DINSTALL_INCLUDEDIR=include/Qt6
             -DINSTALL_MKSPECSDIR=share/Qt6/mkspecs
             -DINSTALL_DESCRIPTIONSDIR=share/Qt6/modules
-
         OPTIONS_RELEASE
             -DCMAKE_BUILD_TYPE=Release
-            
         OPTIONS_DEBUG
             -DCMAKE_BUILD_TYPE=Debug
             -DFEATURE_debug=ON
-
-        MAYBE_UNUSED_VARIABLES
-            BUILD_qtquickcontrols2
-            INPUT_accessibility
-            INPUT_action
-            INPUT_assistant
-            INPUT_clipboard
-            INPUT_columnview
-            INPUT_completer
-            INPUT_cssparser
-            INPUT_cups
-            INPUT_cursor
-            INPUT_datawidgetmapper
-            INPUT_designer
-            INPUT_desktopservices
-            INPUT_dialog
-            INPUT_direct2d
-            INPUT_directfb
-            INPUT_eglfs
-            INPUT_filesystemmodel
-            INPUT_fontconfig
-            INPUT_freetype
-            INPUT_gbm
-            INPUT_harfbuzz
-            INPUT_im
-            INPUT_imageformat_bmp
-            INPUT_imageformat_jpeg
-            INPUT_imageformat_png
-            INPUT_imageformat_ppm
-            INPUT_imageformat_xbm
-            INPUT_imageformat_xpm
-            INPUT_imageformatplugin
-            INPUT_kms
-            INPUT_linuxfb
-            INPUT_macdeployqt
-            INPUT_movie
-            INPUT_opengl
-            INPUT_pixeltool
-            INPUT_qtplugininfo
-            INPUT_standarditemmodel
-            INPUT_statemachine
-            INPUT_style_stylesheet
-            INPUT_systemtrayicon
-            INPUT_tabletevent
-            INPUT_tableview
-            INPUT_texthtmlparser
-            INPUT_textmarkdownreader
-            INPUT_textmarkdownwriter
-            INPUT_textodfwriter
-            INPUT_treeview
-            INPUT_undocommand
-            INPUT_undogroup
-            INPUT_undostack
-            INPUT_undoview
-            INPUT_wheelevent
-            INPUT_windeployqt
-            INPUT_xcb
-            INPUT_xcb_xlib
     )
     
     vcpkg_cmake_build()
