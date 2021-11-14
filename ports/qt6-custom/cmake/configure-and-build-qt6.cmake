@@ -18,15 +18,29 @@ function(configure_and_build_qt6)
     )
     endif()
 
+    # target specific options
+    # I get weird behavior with pcre2 and Qt - on windows system pcre2 fails but embedded one works.
+    # On linux it is other way around. The 'hack' here will be just to use pcre2 from vcpkg on linux and embedded one on windows
+    set(_f_TARGET_OPTIONS "")
+
+    if(VCPKG_TARGET_IS_LINUX)
+        list(APPEND _f_TARGET_OPTIONS -DQT_USE_BUNDLED_BundledPcre2=FALSE)
+        list(APPEND _f_TARGET_OPTIONS -DINPUT_pcre=system)
+    elseif(VCPKG_TARGET_IS_WINDOWS)
+        list(APPEND _f_TARGET_OPTIONS -DQT_USE_BUNDLED_BundledPcre2=TRUE)
+        list(APPEND _f_TARGET_OPTIONS -DINPUT_pcre=qt)
+    endif()
+
     # target is windows and vcpkg would like to statically link CRT libraries
     if(VCPKG_TARGET_IS_WINDOWS AND "${VCPKG_CRT_LINKAGE}" STREQUAL "static")
         list(APPEND _f_DYNAMIC_OPTIONS -DINPUT_static_runtime=yes)
     endif()
-   
+
     vcpkg_cmake_configure(
         SOURCE_PATH ${_ext_SOURCE_PATH}
-		DISABLE_PARALLEL_CONFIGURE
+        DISABLE_PARALLEL_CONFIGURE
         OPTIONS
+            ${_f_TARGET_OPTIONS}
             ${_f_DYNAMIC_OPTIONS}
             -DFEATURE_relocatable=ON
             -DFEATURE_optimize_full=ON
@@ -68,7 +82,6 @@ function(configure_and_build_qt6)
             -DQT_USE_BUNDLED_BundledFreetype=FALSE
             -DQT_USE_BUNDLED_BundledHarfbuzz=FALSE
             -DQT_USE_BUNDLED_BundledLibpng=FALSE
-            -DQT_USE_BUNDLED_BundledPcre2=TRUE
             -DINPUT_gui=no
             -DINPUT_widgets=no
             -DINPUT_dbus=no
