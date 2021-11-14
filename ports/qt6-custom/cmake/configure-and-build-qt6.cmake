@@ -1,4 +1,4 @@
-function(configure_qt6)
+function(configure_and_build_qt6)
 
     # parse external parameters
     cmake_parse_arguments(_ext "" "SOURCE_PATH" "" ${ARGN})
